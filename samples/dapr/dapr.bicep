@@ -63,6 +63,11 @@ resource frontend 'Applications.Core/containers@2023-10-01-preview' = {
         appId: 'frontend'
       }
     ]
+    connections: {
+      backend: {
+        source: backend.id
+      }
+    }
   }
 }
 
@@ -71,5 +76,18 @@ resource stateStore 'Applications.Dapr/stateStores@2023-10-01-preview' = {
   properties: {
     environment: environment
     application: app.id
+  }
+}
+
+resource gateway 'Applications.Core/gateways@2023-10-01-preview' = {
+  name: 'gateway'
+  properties: {
+    application: app.id
+    routes: [
+      {
+        path: '/'
+        destination: 'http://${frontend.name}:8080'
+      }
+    ]
   }
 }
